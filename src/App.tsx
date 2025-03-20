@@ -1,7 +1,16 @@
-import ListGroup from "./components/ListGroup";
+import React from "react";
+import "./App.css"; // We'll create this next
 
-function App() {
-  return <div><ListGroup /></div>;
-}
+const App: React.FC = () => {
+  return (
+    <div className="old-tv-screen">
+      <div className="screen-content">
+        {/* Your content goes here */}
+        <h1>Welcome to the Old TV</h1>
+        <p>This is a simulation of an old TV screen.</p>
+      </div>
+    </div>
+  );
+};
 
 export default App;
