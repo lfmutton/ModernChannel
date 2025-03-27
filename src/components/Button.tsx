@@ -26,7 +26,7 @@ const Button: React.FC<ButtonProps> = ({
         to={to}
         style={{
           padding: "10px 24px",
-          fontSize: "0.9rem",
+          fontSize: "1.3rem",
           fontWeight: 600,
           borderRadius: "20px",
           border: "none",

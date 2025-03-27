@@ -29,7 +29,7 @@ const SignUpPage: React.FC = () => {
         color: "white",
         fontFamily: "IBM Plex Serif",
         background:
-          "radial-gradient(circle, rgba(0,0,0,0.8) 0%, rgba(0,0,0,1) 100%)",
+          "radial-gradient(circle, rgba(189, 58, 58, 0.8) 0%, rgba(0,0,0,1) 100%)",
       }}
     >
       <h1
@@ -40,17 +40,108 @@ const SignUpPage: React.FC = () => {
           letterSpacing: "1px",
         }}
       >
-        Welcome to Modern Channel
+        Modern Channel
       </h1>
+
+      <div
+        style={{
+          display: "flex",
+          gap: "30px",
+          flexDirection: "column",
+          marginBottom: "24px",
+        }}
+      >
+        <textarea
+          placeholder="username"
+          style={{
+            height: "40px",
+            width: "400px",
+            paddingLeft: "15px",
+            paddingTop: "7px",
+            paddingBottom: "7px",
+            border: "none",
+            outline: "none",
+            resize: "none",
+            borderRadius: "5px",
+          }}
+        ></textarea>
+
+        <textarea
+          placeholder="e-mail"
+          style={{
+            height: "40px",
+            width: "400px",
+            paddingLeft: "15px",
+            paddingTop: "7px",
+            paddingBottom: "7px",
+            border: "none",
+            outline: "none",
+            resize: "none",
+            borderRadius: "5px",
+          }}
+        ></textarea>
+
+        <div
+          style={{
+            display: "flex",
+            gap: "30px",
+          }}
+        >
+          <textarea
+            placeholder="user"
+            style={{
+              height: "40px",
+              width: "185px",
+              paddingLeft: "15px",
+              paddingTop: "7px",
+              paddingBottom: "7px",
+              border: "none",
+              outline: "none",
+              resize: "none",
+              borderRadius: "5px",
+            }}
+          ></textarea>
+
+          <textarea
+            placeholder="confirm password"
+            style={{
+              height: "40px",
+              width: "185px",
+              paddingLeft: "15px",
+              paddingTop: "7px",
+              paddingBottom: "7px",
+              border: "none",
+              outline: "none",
+              resize: "none",
+              borderRadius: "5px",
+            }}
+          ></textarea>
+        </div>
+
+        <textarea
+          placeholder="birthday"
+          style={{
+            height: "40px",
+            width: "400px",
+            paddingLeft: "15px",
+            paddingTop: "7px",
+            paddingBottom: "7px",
+            border: "none",
+            outline: "none",
+            resize: "none",
+            borderRadius: "5px",
+          }}
+        ></textarea>
+      </div>
 
       <div style={{ display: "flex", gap: "15px" }}>
         <Button
           color="#f3f5f7"
-          hoverColor="#0075ea"
+          hoverColor="#ff6b4a"
           onClick={handleLogin}
           to="/login"
         >
-          Login
+          Sign in
         </Button>
       </div>
     </div>

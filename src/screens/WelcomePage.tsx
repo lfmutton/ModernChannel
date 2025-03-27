@@ -34,7 +34,7 @@ const WelcomeScreen: React.FC = () => {
     >
       <h1
         style={{
-          fontSize: "2.5rem",
+          fontSize: "3rem",
           marginBottom: "1.5rem",
           textShadow: "0 0 8px rgba(127, 124, 124, 0.5)",
           letterSpacing: "1px",

@@ -40,17 +40,55 @@ const LoginPage: React.FC = () => {
           letterSpacing: "1px",
         }}
       >
-        Welcome to Modern Channel
+        Modern Channel
       </h1>
+      <div
+        style={{
+          display: "flex",
+          gap: "20px",
+          flexDirection: "column",
+          marginBottom: "24px",
+        }}
+      >
+        <textarea
+          placeholder="username"
+          style={{
+            height: "40px",
+            width: "400px",
+            paddingLeft: "15px",
+            paddingTop: "7px",
+            paddingBottom: "7px",
+            border: "none",
+            outline: "none",
+            resize: "none",
+            borderRadius: "5px",
+          }}
+        ></textarea>
+
+        <textarea
+          placeholder="password"
+          style={{
+            height: "40px",
+            width: "400px",
+            paddingLeft: "15px",
+            paddingTop: "7px",
+            paddingBottom: "7px",
+            border: "none",
+            outline: "none",
+            resize: "none",
+            borderRadius: "5px",
+          }}
+        ></textarea>
+      </div>
 
       <div style={{ display: "flex", gap: "15px" }}>
         <Button
           color="#f3f5f7"
-          hoverColor="#ff6b4a"
+          hoverColor="#0075ea"
           onClick={handleSignUp}
           to="/signup"
         >
-          Sign Up
+          Login
         </Button>
       </div>
     </div>
