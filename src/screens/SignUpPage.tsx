@@ -88,7 +88,7 @@ const SignUpPage: React.FC = () => {
           }}
         >
           <textarea
-            placeholder="user"
+            placeholder="password"
             style={{
               height: "40px",
               width: "185px",
