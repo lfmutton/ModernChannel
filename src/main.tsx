@@ -1,9 +1,9 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
-import Screen from "./components/Screen";
+import App from "./App";
 import ListGroup from "./components/ListGroup";
 import "bootstrap/dist/css/bootstrap.css";
 
 ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
-  <Screen />
+  <App></App>
 );
