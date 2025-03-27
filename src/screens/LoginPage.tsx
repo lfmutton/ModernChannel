@@ -29,7 +29,7 @@ const LoginPage: React.FC = () => {
         color: "white",
         fontFamily: "IBM Plex Serif",
         background:
-          "radial-gradient(circle, rgba(0,0,0,0.8) 0%, rgba(0,0,0,1) 100%)",
+          "radial-gradient(circle, rgba(19, 21, 150, 0.8) 0%, rgba(0,0,0,1) 100%)",
       }}
     >
       <h1
