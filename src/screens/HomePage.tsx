@@ -2,6 +2,9 @@ import "bootstrap/dist/css/bootstrap.css";
 import "../App.css";
 import Button from "../components/Button";
 import React, { useState } from "react";
+import { FaPlay } from "react-icons/fa";
+import { ImTv } from "react-icons/im";
+import { FaBars } from "react-icons/fa6";
 
 <style>
   @import
@@ -32,16 +35,38 @@ const HomePage: React.FC = () => {
           "radial-gradient(circle, rgba(0,0,0,0.8) 0%, rgba(0,0,0,1) 100%)",
       }}
     >
-      <h1
-        style={{
-          fontSize: "2.5rem",
-          marginBottom: "1.5rem",
-          textShadow: "0 0 8px rgba(127, 124, 124, 0.5)",
-          letterSpacing: "1px",
-        }}
-      >
-        Welcome to Modern Channel
-      </h1>
+      <FaBars size={40} style={{
+            marginTop: "20px",
+            marginLeft: "20px",
+            position: "fixed",
+            top: 0,
+            left: 0,
+      }} />
+        <h1
+          style={{
+            marginTop: "20px",
+            position: "fixed",
+            top: 0,
+            fontSize: "2.5rem",
+            textShadow: "0 0 8px rgba(127, 124, 124, 0.5)",
+            letterSpacing: "1px",
+          }}
+        >
+          Home
+        </h1>
+      <div style={{
+        display: "flex",
+        gap: "500px",
+      }}>
+        <div>
+          <FaPlay size={100} />
+          <h1>Assistir</h1>
+        </div>
+        <div>
+          <ImTv size={100} />
+          <h1>Programar</h1>
+        </div>
+      </div>
 
       <div style={{ display: "flex", gap: "15px" }}>
         <Button

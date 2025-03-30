@@ -143,6 +143,15 @@ const SignUpPage: React.FC = () => {
         >
           Sign in
         </Button>
+
+        <Button
+          color="#f3f5f7"
+          hoverColor="#ff6b4a"
+          onClick={handleLogin}
+          to="/home"
+        >
+          to home
+        </Button>
       </div>
     </div>
   );
