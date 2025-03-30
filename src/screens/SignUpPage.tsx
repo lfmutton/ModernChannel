@@ -1,6 +1,7 @@
 import "bootstrap/dist/css/bootstrap.css";
 import "../App.css";
 import Button from "../components/Button";
+import Screen from "../components/Screen";
 import React, { useState } from "react";
 
 <style>
@@ -13,25 +14,7 @@ const SignUpPage: React.FC = () => {
   const handleSignUp = () => console.log("Sign Up clicked");
 
   return (
-    <div
-      style={{
-        position: "fixed",
-        top: 0,
-        left: 0,
-        width: "100vw",
-        height: "100vh",
-        backgroundColor: "black",
-        display: "flex",
-        flexDirection: "column",
-        justifyContent: "center",
-        alignItems: "center",
-        zIndex: 1000,
-        color: "white",
-        fontFamily: "IBM Plex Serif",
-        background:
-          "radial-gradient(circle, rgba(189, 58, 58, 0.8) 0%, rgba(0,0,0,1) 100%)",
-      }}
-    >
+    <Screen color="bf313a">
       <h1
         style={{
           fontSize: "2.5rem",
@@ -153,7 +136,7 @@ const SignUpPage: React.FC = () => {
           to home
         </Button>
       </div>
-    </div>
+    </Screen>
   );
 };
 
