@@ -17,54 +17,31 @@ const HomePage: React.FC = () => {
   const handleSignUp = () => console.log("Sign Up clicked");
 
   return (
-    <div
-      style={{
-        position: "fixed",
-        top: 0,
-        left: 0,
-        width: "100vw",
-        height: "100vh",
-        backgroundColor: "black",
-        display: "flex",
-        flexDirection: "column",
-        justifyContent: "center",
-        alignItems: "center",
-        zIndex: 1000,
-        color: "white",
-        fontFamily: "IBM Plex Serif",
-        background:
-          "radial-gradient(circle, rgba(0,0,0,0.8) 0%, rgba(0,0,0,1) 100%)",
-      }}
-    >
-      <h1
+    <Screen color="000000">
+      <FaBars
+        size={40}
         style={{
-          fontSize: "2.5rem",
-          marginBottom: "1.5rem",
-          textShadow: "0 0 8px rgba(127, 124, 124, 0.5)",
-          letterSpacing: "1px",
+          marginTop: "20px",
+          marginLeft: "20px",
+          position: "fixed",
+          top: 0,
+          left: 0,
+        }}
+      />
+      <div
+        style={{
+          display: "flex",
+          gap: "500px",
         }}
       >
-        Welcome to Modern Channel
-      </h1>
-
-      <div style={{ display: "flex", gap: "15px" }}>
-        <Button
-          color="#f3f5f7"
-          hoverColor="#0075ea"
-          onClick={handleLogin}
-          to="/login"
-        >
-          Login
-        </Button>
-
-        <Button
-          color="#f3f5f7"
-          hoverColor="#ff6b4a"
-          onClick={handleSignUp}
-          to="/signup"
-        >
-          Sign Up
-        </Button>
+        <div>
+          <FaPlay size={100} />
+          <h1>Assistir</h1>
+        </div>
+        <div>
+          <ImTv size={100} />
+          <h1>Programar</h1>
+        </div>
       </div>
     </Screen>
   );
