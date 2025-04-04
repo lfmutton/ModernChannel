@@ -2,6 +2,7 @@ import "bootstrap/dist/css/bootstrap.css";
 import "../App.css";
 import Screen from "../components/Screen";
 import Button from "../components/Button";
+import HoverableCard from "../components/HoverContent";
 import React, { useState } from "react";
 import { FaPlay } from "react-icons/fa";
 import { ImTv } from "react-icons/im";
@@ -18,30 +19,39 @@ const HomePage: React.FC = () => {
 
   return (
     <Screen color="000000">
-      <FaBars
-        size={40}
-        style={{
-          marginTop: "20px",
-          marginLeft: "20px",
-          position: "fixed",
-          top: 0,
-          left: 0,
-        }}
-      />
       <div
         style={{
-          display: "flex",
-          gap: "500px",
+          display: "grid",
+          gridTemplateColumns: "49.5% 1% 49.5%",
+          alignItems: "center",
         }}
       >
-        <div>
-          <FaPlay size={100} />
+        <HoverableCard>
+          <FaPlay size={90} />
           <h1>Assistir</h1>
-        </div>
-        <div>
-          <ImTv size={100} />
+        </HoverableCard>
+        <div
+          style={{
+            backgroundColor: "black",
+            opacity: "100%",
+            height: "100vh",
+            width: "100wh",
+          }}
+        ></div>
+        <HoverableCard>
+          <ImTv size={90} />
           <h1>Programar</h1>
-        </div>
+        </HoverableCard>
+        <FaBars
+          size={40}
+          style={{
+            marginTop: "20px",
+            marginLeft: "20px",
+            position: "fixed",
+            top: 0,
+            left: 0,
+          }}
+        />
       </div>
     </Screen>
   );

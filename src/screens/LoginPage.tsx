@@ -69,7 +69,7 @@ const LoginPage: React.FC = () => {
           color="#f3f5f7"
           hoverColor="#0075ea"
           onClick={handleSignUp}
-          to="/signup"
+          to="/home"
         >
           Login
         </Button>
