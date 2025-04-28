@@ -1,12 +1,11 @@
 import "bootstrap/dist/css/bootstrap.css";
 import "../App.css";
-import Screen from "../components/Screen";
 import Button from "../components/Button";
-import HoverableCard from "../components/HoverContent";
 import React, { useState } from "react";
 import { FaPlay } from "react-icons/fa";
 import { ImTv } from "react-icons/im";
 import { FaBars } from "react-icons/fa6";
+import { useNavigate } from "react-router-dom";
 
 <style>
   @import
@@ -14,46 +13,93 @@ import { FaBars } from "react-icons/fa6";
 </style>;
 
 const HomePage: React.FC = () => {
+  const navigate = useNavigate();
   const handleLogin = () => console.log("Login clicked");
   const handleSignUp = () => console.log("Sign Up clicked");
 
+  const handleProfileNavigation = () => {
+    navigate("/ProfilePage");
+  };
+
   return (
-    <Screen color="000000">
-      <div
+    <div
+      style={{
+        position: "fixed",
+        top: 0,
+        left: 0,
+        width: "100vw",
+        height: "100vh",
+        backgroundColor: "black",
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "center",
+        alignItems: "center",
+        zIndex: 1000,
+        color: "white",
+        fontFamily: "IBM Plex Serif",
+        background:
+          "radial-gradient(circle, rgba(0,0,0,0.8) 0%, rgba(0,0,0,1) 100%)",
+      }}
+    >
+      <FaBars 
+        size={40} 
+        onClick={handleProfileNavigation} // Adicione o evento de clique aqui
         style={{
-          display: "grid",
-          gridTemplateColumns: "49.5% 1% 49.5%",
-          alignItems: "center",
-        }}
-      >
-        <HoverableCard>
-          <FaPlay size={90} />
-          <h1>Assistir</h1>
-        </HoverableCard>
-        <div
-          style={{
-            backgroundColor: "black",
-            opacity: "100%",
-            height: "100vh",
-            width: "100wh",
-          }}
-        ></div>
-        <HoverableCard>
-          <ImTv size={90} />
-          <h1>Programar</h1>
-        </HoverableCard>
-        <FaBars
-          size={40}
+          marginTop: "20px",
+          marginLeft: "20px",
+          position: "fixed",
+          top: 0,
+          left: 0,
+          cursor: "pointer", // Adicione cursor pointer para indicar que é clicável
+        }} 
+      />
+      
+        <h1
           style={{
             marginTop: "20px",
-            marginLeft: "20px",
             position: "fixed",
             top: 0,
-            left: 0,
+            fontSize: "2.5rem",
+            textShadow: "0 0 8px rgba(127, 124, 124, 0.5)",
+            letterSpacing: "1px",
           }}
-        />
+        >
+          Home
+        </h1>
+      <div style={{
+        display: "flex",
+        gap: "500px",
+      }}>
+        <div>
+          <FaPlay size={100} />
+          <h1>Assistir</h1>
+        </div>
+        <div>
+          <ImTv size={100} />
+          <h1>Programar</h1>
+        </div>
       </div>
-    </Screen>
+
+      <div style={{ display: "flex", gap: "15px" }}>
+        <Button
+          color="#f3f5f7"
+          hoverColor="#0075ea"
+          onClick={handleLogin}
+          to="/login"
+        >
+          Login
+        </Button>
+
+        <Button
+          color="#f3f5f7"
+          hoverColor="#ff6b4a"
+          onClick={handleSignUp}
+          to="/signup"
+        >
+          Sign Up
+        </Button>
+      </div>
+    </div>
   );
 };
 
