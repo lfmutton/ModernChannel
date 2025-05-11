@@ -35,6 +35,7 @@ const LoginPage: React.FC = () => {
       >
         <textarea
           placeholder="username"
+          required
           style={{
             height: "40px",
             width: "400px",
@@ -50,6 +51,7 @@ const LoginPage: React.FC = () => {
 
         <textarea
           placeholder="password"
+          required
           style={{
             height: "40px",
             width: "400px",

@@ -20,7 +20,7 @@ const HoverableCard: React.FC<HoverableCardProps> = ({
     alignItems: "center",
     border: "3px dotted black",
     borderRadius: "4rem",
-    padding: "6rem 18rem",
+    padding: "6rem 28rem",
     cursor: "pointer",
     transition: "all 0.3s ease",
     height: "80%",

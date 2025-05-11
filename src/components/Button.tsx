@@ -1,11 +1,11 @@
-// Button.tsx
 import { Link } from "react-router-dom";
 import React from "react";
 
 interface ButtonProps {
   color: string;
   hoverColor: string;
-  to?: string; // New prop for navigation
+  to?: string;
+  disabled?: boolean;
   onClick?: () => void;
   children: React.ReactNode;
 }
@@ -14,33 +14,40 @@ const Button: React.FC<ButtonProps> = ({
   color,
   hoverColor,
   to,
+  disabled = false,
   onClick,
   children,
 }) => {
   const [isHovered, setIsHovered] = React.useState(false);
 
-  // If 'to' prop is provided, return a Link, otherwise return a button
-  if (to) {
+  if (to && !disabled) {
     return (
       <Link
         to={to}
         style={{
-          padding: "10px 24px",
-          fontSize: "1.3rem",
+          padding: "1rem 2rem",
+          fontSize: "1.1rem",
           fontWeight: 600,
           borderRadius: "20px",
           border: "none",
-          cursor: "pointer",
+          cursor: disabled ? "not-allowed" : "pointer",
           transition: "all 0.2s ease",
-          backgroundColor: isHovered ? hoverColor : color,
-          color: "black",
-          boxShadow: isHovered
+          backgroundColor: disabled
+            ? "#cccccc"
+            : isHovered
+            ? hoverColor
+            : color,
+          color: disabled ? "#666666" : "black",
+          boxShadow: disabled
+            ? "none"
+            : isHovered
             ? `0 0 12px ${hoverColor}80`
             : `0 0 8px ${color}80`,
-          transform: isHovered ? "scale(1.03)" : "scale(1)",
+          transform: isHovered && !disabled ? "scale(1.03)" : "scale(1)",
           textDecoration: "none",
           display: "inline-block",
           textAlign: "center",
+          opacity: disabled ? 0.7 : 1,
         }}
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
@@ -53,23 +60,30 @@ const Button: React.FC<ButtonProps> = ({
   return (
     <button
       style={{
-        padding: "10px 24px",
-        fontSize: "0.9rem",
+        padding: "1rem 2rem",
+        fontSize: "1.1rem",
         fontWeight: 600,
         borderRadius: "20px",
         border: "none",
-        cursor: "pointer",
+        cursor: disabled ? "not-allowed" : "pointer",
         transition: "all 0.2s ease",
-        backgroundColor: isHovered ? hoverColor : color,
-        color: "black",
-        boxShadow: isHovered
+        backgroundColor: disabled ? "#cccccc" : isHovered ? hoverColor : color,
+        color: disabled ? "#666666" : "black",
+        boxShadow: disabled
+          ? "none"
+          : isHovered
           ? `0 0 12px ${hoverColor}80`
           : `0 0 8px ${color}80`,
-        transform: isHovered ? "scale(1.03)" : "scale(1)",
+        transform: isHovered && !disabled ? "scale(1.03)" : "scale(1)",
+        textDecoration: "none",
+        display: "inline-block",
+        textAlign: "center",
+        opacity: disabled ? 0.7 : 1,
       }}
-      onMouseEnter={() => setIsHovered(true)}
+      onMouseEnter={() => !disabled && setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
-      onClick={onClick}
+      onClick={disabled ? undefined : onClick}
+      disabled={disabled}
     >
       {children}
     </button>

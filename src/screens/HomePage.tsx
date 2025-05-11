@@ -1,6 +1,7 @@
 import "bootstrap/dist/css/bootstrap.css";
 import "../App.css";
 import Button from "../components/Button";
+import HoverableCard from "../components/HoverContent";
 import React, { useState } from "react";
 import { FaPlay } from "react-icons/fa";
 import { ImTv } from "react-icons/im";
@@ -14,8 +15,6 @@ import { useNavigate } from "react-router-dom";
 
 const HomePage: React.FC = () => {
   const navigate = useNavigate();
-  const handleLogin = () => console.log("Login clicked");
-  const handleSignUp = () => console.log("Sign Up clicked");
 
   const handleProfileNavigation = () => {
     navigate("/ProfilePage");
@@ -41,8 +40,26 @@ const HomePage: React.FC = () => {
           "radial-gradient(circle, rgba(0,0,0,0.8) 0%, rgba(0,0,0,1) 100%)",
       }}
     >
-      <FaBars 
-        size={40} 
+      <HoverableCard>
+        <FaPlay size={90} />
+        <h1>Assistir</h1>
+      </HoverableCard>
+      <div
+        style={{
+          backgroundColor: "black",
+          opacity: "100%",
+          height: "100vh",
+          width: "100wh",
+        }}
+      ></div>
+
+      <HoverableCard>
+        <ImTv size={90} />
+        <h1>Programar</h1>
+      </HoverableCard>
+
+      <FaBars
+        size={40}
         onClick={handleProfileNavigation} // Adicione o evento de clique aqui
         style={{
           marginTop: "20px",
@@ -51,56 +68,14 @@ const HomePage: React.FC = () => {
           top: 0,
           left: 0,
           cursor: "pointer", // Adicione cursor pointer para indicar que é clicável
-        }} 
+        }}
       />
-      
-        <h1
-          style={{
-            marginTop: "20px",
-            position: "fixed",
-            top: 0,
-            fontSize: "2.5rem",
-            textShadow: "0 0 8px rgba(127, 124, 124, 0.5)",
-            letterSpacing: "1px",
-          }}
-        >
-          Home
-        </h1>
-      <div style={{
-        display: "flex",
-        gap: "500px",
-      }}>
-        <div>
-          <FaPlay size={100} />
-          <h1>Assistir</h1>
-        </div>
-        <div>
-          <ImTv size={100} />
-          <h1>Programar</h1>
-        </div>
-      </div>
-
-      <div style={{ display: "flex", gap: "15px" }}>
-        <Button
-          color="#f3f5f7"
-          hoverColor="#0075ea"
-          onClick={handleLogin}
-          to="/login"
-        >
-          Login
-        </Button>
-
-        <Button
-          color="#f3f5f7"
-          hoverColor="#ff6b4a"
-          onClick={handleSignUp}
-          to="/signup"
-        >
-          Sign Up
-        </Button>
-      </div>
     </div>
   );
 };
 
 export default HomePage;
+
+//display: "grid",
+//gridTemplateColumns: "49.9% 0.2% 49.9%",
+//alignItems: "center",
