@@ -1,39 +1,147 @@
-.old-tv-screen {
-  position: relative;
-  width: 80%;
-  max-width: 600px;
-  margin: 0 auto;
-  padding: 20px;
-  background-color: #8B4513; /* Brown color for the edges */
-  border-radius: 15px;
-  box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html, body {
+  height: 100%;
+  background-color: #000;
+  overflow-x: hidden;
+  margin: 0;
+  padding: 0;
 }
 
-.screen-content {
-  position: relative;
-  padding: 20px;
-  background-color: #000; /* Black background for the screen */
-  border-radius: 10px;
-  color: #FFF; /* White text color */
-  font-family: 'Courier New', Courier, monospace; /* Monospace font for an old-school look */
-  text-align: center;
-  box-shadow: inset 0 0 10px rgba(255, 255, 255, 0.1);
+body {
+  font-family: 'Press Start 2P', cursive;
+  color: #33ff33;
+  line-height: 1.5;
+  overflow-x: hidden;
 }
 
-.screen-content::before {
-  content: '';
+/* CRT Effects */
+.crt-screen {
+  position: relative;
+  overflow: hidden;
+  border-radius: 24px;
+  background: radial-gradient(circle, #232323 30%, #121212 70%, #000000 100%);
+  box-shadow: 0 0 10px 5px rgba(51, 255, 51, 0.15);
+}
+
+.crt-screen::before {
+  content: "";
   position: absolute;
   top: 0;
   left: 0;
-  right: 0;
-  bottom: 0;
+  width: 100%;
+  height: 100%;
+  background:
+    linear-gradient(
+      to bottom,
+      rgba(255, 255, 255, 0.03) 50%,
+      rgba(0, 0, 0, 0.1) 50%
+    );
+  background-size: 100% 4px;
+  z-index: 2;
+  pointer-events: none;
+}
+
+.crt-screen::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(
+    ellipse at center,
+    transparent 0%,
+    rgba(0, 0, 0, 0.2) 90%,
+    rgba(0, 0, 0, 0.4) 100%
+  );
+  z-index: 3;
+  pointer-events: none;
+}
+
+.vhs-distortion {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
   background: repeating-linear-gradient(
     0deg,
-    rgba(255, 255, 255, 0.1),
-    rgba(255, 255, 255, 0.1) 1px,
+    rgba(0, 0, 0, 0.15),
+    rgba(0, 0, 0, 0.15) 1px,
     transparent 1px,
     transparent 2px
   );
+  opacity: 0.2;
   pointer-events: none;
-  border-radius: 10px;
+  z-index: 4;
+}
+
+.crt-input {
+  background-color: rgba(0, 0, 0, 0.5);
+  color: #ffffff;
+  border: 2px solid #33ff33;
+  padding: 0.75rem;
+  font-family: 'Press Start 2P', cursive;
+  font-size: 0.7rem;
+  transition: box-shadow 0.3s ease;
+}
+
+.crt-input:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px #33ff33;
+}
+
+.crt-button {
+  background-color: #232323;
+  color: #33ff33;
+  border: 2px solid #33ff33;
+  padding: 0.75rem 1.5rem;
+  font-family: 'Press Start 2P', cursive;
+  font-size: 0.7rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.crt-button:hover {
+  background-color: #33ff33;
+  color: #000;
+  box-shadow: 0 0 10px #33ff33, 0 0 20px #33ff33;
+}
+
+.crt-button-secondary {
+  background-color: transparent;
+  color: #33ffff;
+  border: 2px solid #33ffff;
+}
+
+.crt-button-secondary:hover {
+  background-color: #33ffff;
+  color: #000;
+  box-shadow: 0 0 10px #33ffff, 0 0 20px #33ffff;
+}
+
+@keyframes horizontal-movement {
+  0% {
+    transform: translateX(-1px);
+  }
+  100% {
+    transform: translateX(1px);
+  }
+}
+
+.crt-flicker {
+  animation: flicker 0.15s infinite;
+}
+
+.crt-horizontal-movement {
+  animation: horizontal-movement 0.1s infinite alternate;
+}
+
+@media (max-width: 640px) {
+  .crt-screen {
+    border-radius: 16px;
+  }
 }

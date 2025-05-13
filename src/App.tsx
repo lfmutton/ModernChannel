@@ -1,22 +1,59 @@
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import WelcomeScreen from "./screens/WelcomePage";
-import LoginPage from "./screens/LoginPage";
-import SignUpPage from "./screens/SignUpPage";
-import HomePage from "./screens/HomePage";
-import ProfilePage from "./screens/ProfilePage";
+import React from 'react';
+import { Routes, Route, Navigate } from 'react-router-dom';
+import { useAuth } from './contexts/AuthContext';
 
-const App = () => {
-  return (
-    <Router>
-      <Routes>
-        <Route path="/" element={<WelcomeScreen />} />
-        <Route path="/login" element={<LoginPage />} />
-        <Route path="/signup" element={<SignUpPage />} />
-        <Route path="/home" element={<HomePage />} />
-        <Route path="/ProfilePage" element={<ProfilePage />} />
-      </Routes>
-    </Router>
-  );
+// Import layouts and pages
+import Layout from './components/layout/Layout';
+import Login from './pages/Login';
+import Register from './pages/Register';
+import Home from './pages/Home';
+import Watch from './pages/Watch';
+import Schedule from './pages/Schedule';
+import Settings from './pages/Settings';
+
+// Protected route component
+const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const { isAuthenticated } = useAuth();
+  
+  if (!isAuthenticated) {
+    return <Navigate to="/login" replace />;
+  }
+  
+  return <>{children}</>;
 };
+
+function App() {
+  return (
+    <Routes>
+      <Route path="/" element={<Layout />}>
+        {/* Public routes */}
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
+        
+        {/* Protected routes */}
+        <Route path="/" element={
+          <ProtectedRoute>
+            <Home />
+          </ProtectedRoute>
+        } />
+        <Route path="/watch" element={
+          <ProtectedRoute>
+            <Watch />
+          </ProtectedRoute>
+        } />
+        <Route path="/schedule" element={
+          <ProtectedRoute>
+            <Schedule />
+          </ProtectedRoute>
+        } />
+        <Route path="/settings" element={
+          <ProtectedRoute>
+            <Settings />
+          </ProtectedRoute>
+        } />
+      </Route>
+    </Routes>
+  );
+}
 
 export default App;
