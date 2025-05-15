@@ -1,96 +1,101 @@
-import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
-import { ArrowLeft, Play, Pause, SkipBack, SkipForward, Volume2 } from 'lucide-react';
-import { motion } from 'framer-motion';
+import React, { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
+import { ArrowLeft } from "lucide-react";
 
 const Watch: React.FC = () => {
-  const [isPlaying, setIsPlaying] = useState(false);
+  const [showControls, setShowControls] = useState(false);
   const [videoProgress, setVideoProgress] = useState(0);
+  const [mouseTimeout, setMouseTimeout] = useState<NodeJS.Timeout | null>(null);
 
-  const togglePlay = () => {
-    setIsPlaying(!isPlaying);
-  };
+  // Mock video data
+  const videoTitle = "SYNTHWAVE NIGHTS - EP.01";
+  const videoSrc = "/path/to/your/video.mp4"; // Replace with your actual video path
+
+  useEffect(() => {
+    const handleMouseMove = () => {
+      setShowControls(true);
+      if (mouseTimeout) clearTimeout(mouseTimeout);
+      setMouseTimeout(setTimeout(() => setShowControls(false), 3000));
+    };
+
+    window.addEventListener("mousemove", handleMouseMove);
+    return () => {
+      window.removeEventListener("mousemove", handleMouseMove);
+      if (mouseTimeout) clearTimeout(mouseTimeout);
+    };
+  }, [mouseTimeout]);
 
   const handleProgressChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setVideoProgress(Number(e.target.value));
   };
 
-  // Mock video data
-  const videoTitle = "SYNTHWAVE NIGHTS - EP.01";
-  const videoDescription = "A journey through neon-lit streets and digital dreams.";
+  // Format time display (00:00 format)
+  const formatTime = (seconds: number) => {
+    const mins = Math.floor(seconds / 60);
+    const secs = Math.floor(seconds % 60);
+    return `${mins.toString().padStart(2, "0")}:${secs
+      .toString()
+      .padStart(2, "0")}`;
+  };
+
+  // Mock duration (replace with actual video duration)
+  const duration = 330; // 5:30 in seconds
+  const currentTime = (duration * videoProgress) / 100;
 
   return (
-    <div className="w-full h-full flex flex-col">
-      {/* Header with back button */}
-      <div className="flex items-center mb-4">
-        <Link to="/">
-          <motion.div whileHover={{ x: -5 }} className="text-crt-green mr-4">
-            <ArrowLeft size={20} />
-          </motion.div>
-        </Link>
-        <h1 className="font-retro text-crt-green text-sm">VIDEO PLAYER</h1>
+    <div className="fixed inset-0 bg-black">
+      {/* Video container - always fullscreen */}
+      <div className="absolute inset-0">
+        {videoSrc ? (
+          <video
+            className="w-full h-full object-contain"
+            autoPlay
+            loop
+            muted
+            playsInline
+          >
+            <source src={videoSrc} type="video/mp4" />
+            Your browser does not support the video tag.
+          </video>
+        ) : (
+          <div className="absolute inset-0 flex items-center justify-center">
+            <div className="text-crt-green text-xl">UPLOADING VIDEO...</div>
+          </div>
+        )}
       </div>
 
-      {/* Video player */}
-      <div className="flex-1 relative border-2 border-crt-green">
-        <div className="absolute inset-0 bg-black flex items-center justify-center">
-          <div className={`text-crt-green text-xl ${isPlaying ? 'hidden' : 'block'}`}>
-            ▶ PRESS PLAY
+      {/* Back button (always visible) */}
+      <Link
+        to="/"
+        className="absolute top-4 left-4 text-crt-green hover:text-crt-cyan z-50"
+      >
+        <ArrowLeft size={24} />
+      </Link>
+
+      {/* Progress controls (appears on mouse movement) */}
+      {showControls && (
+        <div className="absolute bottom-0 left-0 right-0 bg-black bg-opacity-80 p-4 z-50">
+          {/* Video title and time */}
+          <div className="flex justify-between items-center mb-2">
+            <span className="text-crt-green text-sm font-retro">
+              {videoTitle}
+            </span>
+            <span className="text-crt-green text-sm">
+              {formatTime(currentTime)} / {formatTime(duration)}
+            </span>
           </div>
-        </div>
-        
-        {/* Video controls overlay */}
-        <div className="absolute bottom-0 left-0 right-0 bg-black bg-opacity-70 p-4">
-          <div className="mb-3 flex justify-between items-center">
-            <div>
-              <h3 className="text-crt-cyan font-retro text-xs">{videoTitle}</h3>
-              <p className="text-crt-white text-xs mt-1">{videoDescription}</p>
-            </div>
-            <div className="text-crt-green">
-              <Volume2 size={16} />
-            </div>
-          </div>
-          
+
           {/* Progress bar */}
-          <div className="mb-3">
-            <input
-              type="range"
-              min="0"
-              max="100"
-              value={videoProgress}
-              onChange={handleProgressChange}
-              className="w-full h-2 bg-crt-gray rounded-full appearance-none [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:h-3 [&::-webkit-slider-thumb]:w-3 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-crt-green"
-            />
-            <div className="flex justify-between text-crt-green text-xs mt-1">
-              <span>00:{videoProgress.toString().padStart(2, '0')}</span>
-              <span>05:30</span>
-            </div>
-          </div>
-          
-          {/* Control buttons */}
-          <div className="flex justify-center space-x-6">
-            <button className="text-crt-cyan">
-              <SkipBack size={20} />
-            </button>
-            <button 
-              className="text-crt-green"
-              onClick={togglePlay}
-            >
-              {isPlaying ? <Pause size={24} /> : <Play size={24} />}
-            </button>
-            <button className="text-crt-cyan">
-              <SkipForward size={20} />
-            </button>
-          </div>
+          <input
+            type="range"
+            min="0"
+            max="100"
+            value={videoProgress}
+            onChange={handleProgressChange}
+            className="w-full h-1.5 bg-crt-gray rounded-full appearance-none [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:h-3 [&::-webkit-slider-thumb]:w-3 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-crt-green"
+          />
         </div>
-      </div>
-
-      {/* Retro tape counter */}
-      <div className="mt-6 bg-black p-2 border border-crt-gray flex justify-center">
-        <div className="inline-block bg-crt-gray px-4 py-1 font-mono text-black text-sm tracking-widest">
-          {isPlaying ? "PLAYING" : "PAUSED"}
-        </div>
-      </div>
+      )}
     </div>
   );
 };

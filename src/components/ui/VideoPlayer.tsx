@@ -1,6 +1,6 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { ArrowLeft } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import React, { useRef, useEffect } from "react";
+import { ArrowLeft } from "lucide-react";
+import { Link } from "react-router-dom";
 
 interface VideoPlayerProps {
   title: string;
@@ -11,46 +11,36 @@ interface VideoPlayerProps {
 const VideoPlayer: React.FC<VideoPlayerProps> = ({
   title,
   description = "",
-  videoSrc = ""
+  videoSrc = "",
 }) => {
-  const [showControls, setShowControls] = useState(true);
-  const [mouseTimer, setMouseTimer] = useState<NodeJS.Timeout | null>(null);
+  const [showControls, setShowControls] = React.useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
 
   useEffect(() => {
     // Start playing automatically
     if (videoRef.current) {
-      videoRef.current.play();
+      videoRef.current.play().catch((error) => {
+        console.error("Autoplay failed:", error);
+      });
     }
 
-    // Mouse movement handler
+    // Mouse movement handler to show controls
     const handleMouseMove = () => {
       setShowControls(true);
-      
-      if (mouseTimer) {
-        clearTimeout(mouseTimer);
-      }
-      
       const timer = setTimeout(() => {
         setShowControls(false);
-      }, 3000);
-      
-      setMouseTimer(timer);
+      }, 2000);
+      return () => clearTimeout(timer);
     };
 
-    document.addEventListener('mousemove', handleMouseMove);
-
+    document.addEventListener("mousemove", handleMouseMove);
     return () => {
-      document.removeEventListener('mousemove', handleMouseMove);
-      if (mouseTimer) {
-        clearTimeout(mouseTimer);
-      }
+      document.removeEventListener("mousemove", handleMouseMove);
     };
   }, []);
 
   return (
     <div className="fixed inset-0 bg-black">
-      {/* Video */}
       <div className="relative w-full h-full">
         {videoSrc ? (
           <video
@@ -58,9 +48,10 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
             className="w-full h-full object-contain"
             autoPlay
             loop
+            muted // Added muted to help with autoplay restrictions
+            playsInline // For iOS
           >
             <source src={videoSrc} type="video/mp4" />
-            Your browser does not support the video tag.
           </video>
         ) : (
           <div className="absolute inset-0 flex items-center justify-center">
@@ -68,9 +59,9 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
           </div>
         )}
 
-        {/* Exit button */}
+        {/* Exit button (only shows on mouse movement) */}
         {showControls && (
-          <Link 
+          <Link
             to="/"
             className="absolute top-4 left-4 text-crt-white hover:text-crt-green transition-colors duration-300 z-50"
           >

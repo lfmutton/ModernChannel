@@ -1,42 +1,28 @@
-import { sql } from 'drizzle-orm';
-import { foreignKey } from 'drizzle-orm/gel-core';
-import { integer, primaryKey ,sqliteTable, text } from 'drizzle-orm/sqlite-core';
+import { sqliteTable, integer, text, unique} from 'drizzle-orm/sqlite-core';
 
-export const usersTable = sqliteTable('usuarios', {
-  id: integer('id').primaryKey(),
-  nome: text('nome').notNull(),
-  data: integer('data').notNull(),
-  email: text('email').unique().notNull(),
-  senha: text('senha').unique().notNull(),
+// Tabela de usuários
+export const users = sqliteTable('users', {
+  id: integer('id').primaryKey({ autoIncrement: true }),
+  name: text('name').notNull(),
+  password: text('password').notNull(),
+  birthday: text('birthday').notNull(),
 });
 
-export const seriesTable = sqliteTable('series', {
-  id: integer('id').primaryKey(),
-  title: text('title').notNull(),
-  conteudo: text('conteudo').notNull(),
-  tamanho: integer('tamanho').notNull(),
-  createdAt: text('created_at')
-    .default(sql`(CURRENT_TIMESTAMP)`)
-    .notNull(),
-  updateAt: integer('updated_at', { mode: 'timestamp' }).$onUpdate(() => new Date()),
+// Tabela de séries
+export const series = sqliteTable('series', {
+  id: integer('id').primaryKey({ autoIncrement: true }),
+  name: text('name').notNull(),
+  episodeCount: integer('episode_count').notNull(),
 });
 
-export const usersSeriesTable = sqliteTable('usuarios-series', {
-    userId: integer('user_id')
-    .notNull()
-    .references(() => usersTable.id),
-  seriesId: integer('series_id')
-    .notNull()
-    .references(() => seriesTable.id),
+// Tabela de relacionamento usuário-série (progresso de episódios)
+export const userSeriesProgress = sqliteTable('user_series_progress', {
+  id: integer('id').primaryKey({ autoIncrement: true }),
+  userId: integer('user_id').notNull().references(() => users.id),
+  seriesId: integer('series_id').notNull().references(() => series.id),
+  currentEpisode: integer('current_episode').notNull(),
+  
+  // Podemos adicionar uma constraint única para evitar entradas duplicadas
 }, (table) => ({
-  pk: primaryKey(table.userId, table.seriesId),
+  uniqueUserSeries: unique('unique_user_series').on(table.userId, table.seriesId),
 }));
-
-export type InsertUser = typeof usersTable.$inferInsert;
-export type SelectUser = typeof usersTable.$inferSelect;
-
-export type InsertPost = typeof seriesTable.$inferInsert;
-export type SelectPost = typeof seriesTable.$inferSelect;
-
-export type InsertUserSeries = typeof usersSeriesTable.$inferInsert;
-export type SelectUserSeries = typeof usersSeriesTable.$inferSelect;
