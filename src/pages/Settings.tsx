@@ -5,44 +5,69 @@ import { motion } from 'framer-motion';
 import { useAuth } from '../contexts/AuthContext';
 
 const Settings: React.FC = () => {
-  const { user, updateUser, logout } = useAuth();
+  const { user, updateUserProfile, logout } = useAuth();
   const navigate = useNavigate();
   
-  const [username, setUsername] = useState(user?.username || '');
-  const [email, setEmail] = useState(user?.email || '');
-  const [birthdate, setBirthdate] = useState(user?.birthdate || '');
-  const [password, setPassword] = useState('');
+  const [username, setUsername] = useState(user || '');
+  const [currentPassword, setCurrentPassword] = useState('');
+  const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setMessage('');
     setError('');
+    setIsLoading(true);
     
     // Validation
-    if (password && password !== confirmPassword) {
-      setError('Passwords do not match');
+    if (!currentPassword) {
+      setError('Current password is required');
+      setIsLoading(false);
+      return;
+    }
+
+    if (newPassword && newPassword !== confirmPassword) {
+      setError('New passwords do not match');
+      setIsLoading(false);
       return;
     }
     
     try {
-      const success = await updateUser({
-        username,
-        email,
-        birthdate
-      });
+      const updateData: { username?: string; password?: string } = {};
       
-      if (success) {
+      if (username !== user) {
+        updateData.username = username;
+      }
+      
+      if (newPassword) {
+        updateData.password = newPassword;
+      }
+
+      if (Object.keys(updateData).length === 0) {
+        setError('No changes to save');
+        setIsLoading(false);
+        return;
+      }
+
+      const result = await updateUserProfile(updateData, currentPassword);
+      
+      if (result.success) {
         setMessage('Profile updated successfully');
+        setCurrentPassword('');
+        setNewPassword('');
+        setConfirmPassword('');
       } else {
-        setError('Failed to update profile');
+        setError(result.error || 'Failed to update profile');
       }
     } catch (err) {
       setError('An error occurred');
       console.error(err);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -52,8 +77,7 @@ const Settings: React.FC = () => {
   };
 
   return (
-    <div className="w-full h-full flex flex-col">
-      {/* Header with back button */}
+    <div className="w-full h-full flex flex-col p-4">
       <div className="flex items-center mb-4">
         <Link to="/">
           <motion.div whileHover={{ x: -5 }} className="text-crt-green mr-4">
@@ -63,7 +87,6 @@ const Settings: React.FC = () => {
         <h1 className="font-retro text-crt-green text-sm">ACCOUNT SETTINGS</h1>
       </div>
 
-      {/* Settings form */}
       <form onSubmit={handleSubmit} className="flex-1 overflow-y-auto">
         {message && (
           <div className="mb-4 p-2 border border-crt-green text-crt-green text-xs">
@@ -87,45 +110,35 @@ const Settings: React.FC = () => {
             value={username}
             onChange={(e) => setUsername(e.target.value)}
             className="crt-input w-full"
+            minLength={4}
           />
         </div>
         
         <div className="mb-4">
-          <label htmlFor="email" className="block text-crt-green text-xs mb-2">
-            EMAIL:
+          <label htmlFor="currentPassword" className="block text-crt-green text-xs mb-2">
+            CURRENT PASSWORD:
           </label>
           <input
-            id="email"
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            className="crt-input w-full"
-          />
-        </div>
-        
-        <div className="mb-4">
-          <label htmlFor="birthdate" className="block text-crt-green text-xs mb-2">
-            BIRTHDATE:
-          </label>
-          <input
-            id="birthdate"
-            type="date"
-            value={birthdate}
-            onChange={(e) => setBirthdate(e.target.value)}
-            className="crt-input w-full"
-          />
-        </div>
-        
-        <div className="mb-4">
-          <label htmlFor="password" className="block text-crt-green text-xs mb-2">
-            NEW PASSWORD (LEAVE BLANK TO KEEP CURRENT):
-          </label>
-          <input
-            id="password"
+            id="currentPassword"
             type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
+            value={currentPassword}
+            onChange={(e) => setCurrentPassword(e.target.value)}
             className="crt-input w-full"
+            required
+          />
+        </div>
+        
+        <div className="mb-4">
+          <label htmlFor="newPassword" className="block text-crt-green text-xs mb-2">
+            NEW PASSWORD:
+          </label>
+          <input
+            id="newPassword"
+            type="password"
+            value={newPassword}
+            onChange={(e) => setNewPassword(e.target.value)}
+            className="crt-input w-full"
+            minLength={6}
           />
         </div>
         
@@ -146,9 +159,10 @@ const Settings: React.FC = () => {
           <button 
             type="submit" 
             className="crt-button flex items-center justify-center"
+            disabled={isLoading}
           >
             <Save size={16} className="mr-2" />
-            SAVE CHANGES
+            {isLoading ? "SAVING..." : "SAVE CHANGES"}
           </button>
           
           <button 
@@ -162,7 +176,6 @@ const Settings: React.FC = () => {
         </div>
       </form>
 
-      {/* System information */}
       <div className="mt-6 text-crt-gray text-xs">
         <div className="flex justify-between">
           <span>SYSTEM VERSION:</span>
