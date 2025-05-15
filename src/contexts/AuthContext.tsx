@@ -1,107 +1,108 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
-
-interface User {
-  username: string;
-  email: string;
-  birthdate?: string;
-}
+import React, { createContext, useContext, useState, ReactNode } from "react";
+import { useNavigate } from "react-router-dom";
+import { hash } from "bcryptjs";
 
 interface AuthContextType {
-  isAuthenticated: boolean;
-  user: User | null;
   login: (username: string, password: string) => Promise<boolean>;
-  register: (user: User, password: string) => Promise<boolean>;
+  checkUserExists: (username: string, password: string) => Promise<boolean>;
   logout: () => void;
-  updateUser: (user: Partial<User>) => Promise<boolean>;
+  isAuthenticated: boolean;
+  user: string | null;
 }
 
-const AuthContext = createContext<AuthContextType | undefined>(undefined);
+const AuthContext = createContext<AuthContextType | null>(null);
 
-export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
-  const [user, setUser] = useState<User | null>(null);
+export const AuthProvider = ({ children }: { children: ReactNode }) => {
+  const [user, setUser] = useState<string | null>(null);
+  const navigate = useNavigate();
 
-  // Check if user is already logged in (from localStorage)
-  useEffect(() => {
-    const storedUser = localStorage.getItem('user');
+  const login = async (
+    username: string,
+    password: string
+  ): Promise<boolean> => {
+    try {
+      const hashedPassword = await hash(password, 12);
+      // Substitua por sua chamada API real
+      const response = await fetch("/api/auth/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ username, hashedPassword }),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        setUser(username);
+        localStorage.setItem("user", username);
+        return true;
+      }
+      return false;
+    } catch (error) {
+      console.error("Login error:", error);
+      return false;
+    }
+  };
+
+  const checkUserExists = async (
+    username: string,
+    password: string
+  ): Promise<{ success: boolean; error?: string }> => {
+    try {
+      const response = await fetch("/api/auth/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ username, password }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        return { success: false, error: errorData.message || "Login failed" };
+      }
+
+      const { token, user } = await response.json();
+
+      // Store the authentication token (in memory or secure storage)
+      localStorage.setItem("authToken", token);
+
+      return { success: true };
+    } catch (error) {
+      console.error("Login error:", error);
+      return { success: false, error: "Network error" };
+    }
+  };
+
+  const logout = () => {
+    setUser(null);
+    localStorage.removeItem("user");
+    navigate("/login");
+  };
+
+  // Verifica se há usuário no localStorage ao inicializar
+  React.useEffect(() => {
+    const storedUser = localStorage.getItem("user");
     if (storedUser) {
-      setUser(JSON.parse(storedUser));
-      setIsAuthenticated(true);
+      setUser(storedUser);
     }
   }, []);
 
-  // Login function (mock implementation)
-  const login = async (username: string, password: string): Promise<boolean> => {
-    // In a real app, this would make an API call to verify credentials
-    
-    // Mock successful login
-    if (username && password) {
-      const mockUser = { username, email: `${username}@example.com` };
-      setUser(mockUser);
-      setIsAuthenticated(true);
-      localStorage.setItem('user', JSON.stringify(mockUser));
-      return true;
-    }
-    
-    return false;
-  };
-
-  // Register function (mock implementation)
-  const register = async (newUser: User, password: string): Promise<boolean> => {
-    // In a real app, this would make an API call to create a new user
-    
-    // Mock successful registration
-    if (newUser.username && newUser.email && password) {
-      setUser(newUser);
-      setIsAuthenticated(true);
-      localStorage.setItem('user', JSON.stringify(newUser));
-      return true;
-    }
-    
-    return false;
-  };
-
-  // Logout function
-  const logout = () => {
-    setUser(null);
-    setIsAuthenticated(false);
-    localStorage.removeItem('user');
-  };
-
-  // Update user function (mock implementation)
-  const updateUser = async (updatedUser: Partial<User>): Promise<boolean> => {
-    // In a real app, this would make an API call to update user data
-    
-    if (user) {
-      const newUser = { ...user, ...updatedUser };
-      setUser(newUser);
-      localStorage.setItem('user', JSON.stringify(newUser));
-      return true;
-    }
-    
-    return false;
-  };
-
   const value = {
-    isAuthenticated,
-    user,
     login,
-    register,
+    checkUserExists,
     logout,
-    updateUser
+    isAuthenticated: !!user,
+    user,
   };
 
-  return (
-    <AuthContext.Provider value={value}>
-      {children}
-    </AuthContext.Provider>
-  );
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };
 
-export const useAuth = (): AuthContextType => {
+export const useAuth = () => {
   const context = useContext(AuthContext);
   if (!context) {
-    throw new Error('useAuth must be used within an AuthProvider');
+    throw new Error("useAuth must be used within an AuthProvider");
   }
   return context;
 };

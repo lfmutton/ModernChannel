@@ -1,73 +1,182 @@
-import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
-import { ArrowLeft, ChevronLeft, ChevronRight } from 'lucide-react';
-import { motion } from 'framer-motion';
+import React, { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
+import { ArrowLeft, ChevronLeft, ChevronRight, Save } from "lucide-react";
+import { motion } from "framer-motion";
 
 // Mock data for carousel banners
 const carouselItems = [
-  { id: 1, title: "CYBER NEXUS", image: "https://images.pexels.com/photos/1749900/pexels-photo-1749900.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1" },
-  { id: 2, title: "RETRO WAVES", image: "https://images.pexels.com/photos/3265460/pexels-photo-3265460.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1" },
-  { id: 3, title: "NEON NIGHTS", image: "https://images.pexels.com/photos/3311574/pexels-photo-3311574.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1" },
-  { id: 4, title: "SYNTHWAVE", image: "https://images.pexels.com/photos/924824/pexels-photo-924824.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1" },
-  { id: 5, title: "DIGITAL DREAMS", image: "https://images.pexels.com/photos/3617500/pexels-photo-3617500.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1" },
-  { id: 6, title: "PIXEL PERFECT", image: "https://images.pexels.com/photos/1910236/pexels-photo-1910236.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1" },
-  { id: 7, title: "VECTOR VOYAGE", image: "https://images.pexels.com/photos/2510067/pexels-photo-2510067.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1" },
-  { id: 8, title: "BIT CRUSHED", image: "https://images.pexels.com/photos/3056059/pexels-photo-3056059.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1" },
-  { id: 9, title: "GLITCH ART", image: "https://images.pexels.com/photos/1670187/pexels-photo-1670187.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1" },
-  { id: 10, title: "8-BIT WONDERS", image: "https://images.pexels.com/photos/1762851/pexels-photo-1762851.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1" },
+  {
+    id: 1,
+    title: "CYBER NEXUS",
+    image:
+      "https://images.pexels.com/photos/1749900/pexels-photo-1749900.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
+  },
+  {
+    id: 2,
+    title: "RETRO WAVES",
+    image:
+      "https://images.pexels.com/photos/3265460/pexels-photo-3265460.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
+  },
+  {
+    id: 3,
+    title: "NEON NIGHTS",
+    image:
+      "https://images.pexels.com/photos/3311574/pexels-photo-3311574.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
+  },
+  {
+    id: 4,
+    title: "SYNTHWAVE",
+    image:
+      "https://images.pexels.com/photos/924824/pexels-photo-924824.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
+  },
+  {
+    id: 5,
+    title: "DIGITAL DREAMS",
+    image:
+      "https://images.pexels.com/photos/3617500/pexels-photo-3617500.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
+  },
+  {
+    id: 6,
+    title: "PIXEL PERFECT",
+    image:
+      "https://images.pexels.com/photos/1910236/pexels-photo-1910236.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
+  },
+  {
+    id: 7,
+    title: "VECTOR VOYAGE",
+    image:
+      "https://images.pexels.com/photos/2510067/pexels-photo-2510067.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
+  },
+  {
+    id: 8,
+    title: "BIT CRUSHED",
+    image:
+      "https://images.pexels.com/photos/3056059/pexels-photo-3056059.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
+  },
+  {
+    id: 9,
+    title: "GLITCH ART",
+    image:
+      "https://images.pexels.com/photos/1670187/pexels-photo-1670187.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
+  },
+  {
+    id: 10,
+    title: "8-BIT WONDERS",
+    image:
+      "https://images.pexels.com/photos/1762851/pexels-photo-1762851.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
+  },
 ];
 
 // Mock data for schedule
-const weekDays = ['MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT', 'SUN'];
-const timeSlots = ['8:00', '12:00', '16:00', '20:00', '00:00'];
-
+// Schedule data structure
 interface ScheduleItem {
   day: string;
   time: string;
   show: string;
+  showId: number;
 }
 
 const Schedule: React.FC = () => {
+  // Load schedule from localStorage or use default
+  const [schedule, setSchedule] = useState<ScheduleItem[]>(() => {
+    const saved = localStorage.getItem("tvSchedule");
+    return saved
+      ? JSON.parse(saved)
+      : [
+          { day: "MON", time: "20:00", show: "NEON NIGHTS", showId: 3 },
+          { day: "WED", time: "16:00", show: "CYBER NEXUS", showId: 1 },
+          // ... other default items ...
+        ];
+  });
+
   const [carouselIndex, setCarouselIndex] = useState(0);
-  const [schedule, setSchedule] = useState<ScheduleItem[]>([
-    { day: 'MON', time: '20:00', show: 'NEON NIGHTS' },
-    { day: 'WED', time: '16:00', show: 'CYBER NEXUS' },
-    { day: 'FRI', time: '00:00', show: 'SYNTHWAVE' },
-    { day: 'SAT', time: '20:00', show: 'RETRO WAVES' },
-  ]);
   const [selectedDay, setSelectedDay] = useState<string | null>(null);
   const [selectedTime, setSelectedTime] = useState<string | null>(null);
-  const [selectedShow, setSelectedShow] = useState<string | null>(null);
+  const [selectedShow, setSelectedShow] = useState<{
+    title: string;
+    id: number;
+  } | null>(null);
+
+  // Days and times
+  const weekDays = ["MON", "TUE", "WED", "THU", "FRI", "SAT", "SUN"];
+  const timeSlots = [
+    "8:00",
+    "9:00",
+    "10:00",
+    "11:00",
+    "12:00",
+    "13:00",
+    "14:00",
+    "15:00",
+    "16:00",
+    "17:00",
+    "18:00",
+    "19:00",
+    "20:00",
+    "21:00",
+  ];
+
+  // Save schedule to localStorage whenever it changes
+  useEffect(() => {
+    localStorage.setItem("tvSchedule", JSON.stringify(schedule));
+  }, [schedule]);
 
   const nextSlide = () => {
-    setCarouselIndex((prevIndex) => (prevIndex + 1) % (carouselItems.length - 2));
+    setCarouselIndex((prev) => (prev + 1) % (carouselItems.length - 2));
   };
 
   const prevSlide = () => {
-    setCarouselIndex((prevIndex) => 
-      prevIndex === 0 ? carouselItems.length - 3 : prevIndex - 1
+    setCarouselIndex((prev) =>
+      prev === 0 ? carouselItems.length - 3 : prev - 1
     );
   };
 
   const handleCellClick = (day: string, time: string) => {
     setSelectedDay(day);
     setSelectedTime(time);
-    
-    const existingSchedule = schedule.find(item => item.day === day && item.time === time);
-    setSelectedShow(existingSchedule ? existingSchedule.show : null);
+
+    const existing = schedule.find(
+      (item) => item.day === day && item.time === time
+    );
+    if (existing) {
+      setSelectedShow({ title: existing.show, id: existing.showId });
+    } else {
+      setSelectedShow(null);
+    }
   };
 
   const addToSchedule = () => {
     if (selectedDay && selectedTime && selectedShow) {
-      const filteredSchedule = schedule.filter(
-        item => !(item.day === selectedDay && item.time === selectedTime)
+      // Remove any existing entry for this time slot
+      const updated = schedule.filter(
+        (item) => !(item.day === selectedDay && item.time === selectedTime)
       );
-      
+
+      // Add new entry
       setSchedule([
-        ...filteredSchedule,
-        { day: selectedDay, time: selectedTime, show: selectedShow }
+        ...updated,
+        {
+          day: selectedDay,
+          time: selectedTime,
+          show: selectedShow.title,
+          showId: selectedShow.id,
+        },
       ]);
-      
+
+      // Reset selection
+      setSelectedDay(null);
+      setSelectedTime(null);
+      setSelectedShow(null);
+    }
+  };
+
+  const removeFromSchedule = () => {
+    if (selectedDay && selectedTime) {
+      setSchedule(
+        schedule.filter(
+          (item) => !(item.day === selectedDay && item.time === selectedTime)
+        )
+      );
       setSelectedDay(null);
       setSelectedTime(null);
       setSelectedShow(null);
@@ -75,98 +184,128 @@ const Schedule: React.FC = () => {
   };
 
   return (
-    <div className="w-full h-full flex flex-col p-4">
-      {/* Header with back button */}
-      <div className="flex items-center mb-4">
-        <Link to="/">
-          <motion.div whileHover={{ x: -5 }} className="text-crt-green mr-4">
+    <div className="w-full h-full flex flex-col p-4 crt-screen">
+      {/* Header */}
+      <div className="flex items-center justify-between mb-4">
+        <Link to="/" className="flex items-center">
+          <motion.div whileHover={{ x: -5 }} className="text-crt-green mr-2">
             <ArrowLeft size={20} />
           </motion.div>
+          <h1 className="font-retro text-crt-green text-sm">
+            PROGRAM SCHEDULER
+          </h1>
         </Link>
-        <h1 className="font-retro text-crt-green text-sm">PROGRAM SCHEDULER</h1>
+        <button
+          onClick={() =>
+            localStorage.setItem("tvSchedule", JSON.stringify(schedule))
+          }
+          className="text-crt-cyan hover:text-crt-green"
+          title="Save Schedule"
+        >
+          <Save size={18} />
+        </button>
       </div>
 
-      {/* Carousel */}
+      {/* Shows Carousel */}
       <div className="relative mb-6">
-        <h2 className="font-retro text-crt-cyan text-xs mb-2">AVAILABLE SHOWS:</h2>
-        <div className="relative overflow-hidden">
-          <div 
-            className="flex transition-transform duration-500"
+        <h2 className="font-retro text-crt-cyan text-xs mb-2">
+          AVAILABLE SHOWS
+        </h2>
+        <div className="relative overflow-hidden h-28">
+          <div
+            className="flex transition-transform duration-300"
             style={{ transform: `translateX(-${carouselIndex * 33.33}%)` }}
           >
             {carouselItems.map((item) => (
-              <div 
-                key={item.id}
-                className="min-w-[33.33%] px-2"
-                onClick={() => setSelectedShow(item.title)}
-              >
-                <motion.div 
-                  whileHover={{ y: -5 }}
-                  className={`
-                    relative h-24 overflow-hidden rounded border-2 cursor-pointer
-                    ${selectedShow === item.title ? 'border-crt-cyan animate-glow' : 'border-crt-gray'}
-                  `}
+              <div key={item.id} className="min-w-[33.33%] px-1">
+                <motion.div
+                  whileHover={{ scale: 0.95 }}
+                  className={`relative h-full rounded border-2 cursor-pointer overflow-hidden ${
+                    selectedShow?.id === item.id
+                      ? "border-crt-cyan"
+                      : "border-crt-gray"
+                  }`}
+                  onClick={() =>
+                    setSelectedShow({ title: item.title, id: item.id })
+                  }
                 >
-                  <img 
+                  <img
                     src={item.image}
                     alt={item.title}
-                    className="w-full h-full object-cover opacity-50"
+                    className="w-full h-full object-cover opacity-40"
                   />
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <h3 className="font-retro text-xs text-center text-white">{item.title}</h3>
+                  <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50">
+                    <h3 className="font-retro text-xs text-center text-crt-green px-2">
+                      {item.title}
+                    </h3>
                   </div>
                 </motion.div>
               </div>
             ))}
           </div>
-          <button 
+          <button
             onClick={prevSlide}
-            className="absolute left-0 top-1/2 transform -translate-y-1/2 text-crt-green z-10"
+            className="absolute left-1 top-1/2 transform -translate-y-1/2 text-crt-green bg-black bg-opacity-70 p-1 rounded-full"
           >
-            <ChevronLeft size={20} />
+            <ChevronLeft size={18} />
           </button>
-          <button 
+          <button
             onClick={nextSlide}
-            className="absolute right-0 top-1/2 transform -translate-y-1/2 text-crt-green z-10"
+            className="absolute right-1 top-1/2 transform -translate-y-1/2 text-crt-green bg-black bg-opacity-70 p-1 rounded-full"
           >
-            <ChevronRight size={20} />
+            <ChevronRight size={18} />
           </button>
         </div>
       </div>
 
-      {/* Weekly Agenda */}
-      <h2 className="font-retro text-crt-cyan text-xs mb-2">WEEKLY SCHEDULE:</h2>
-      <div className="flex-1 overflow-x-auto">
-        <table className="w-full border-collapse text-xs">
+      {/* Schedule Grid */}
+      <div className="flex-1 overflow-auto">
+        <table className="w-full border-collapse">
           <thead>
             <tr>
-              <th className="p-2 text-crt-green border-2 border-crt-green"></th>
-              {weekDays.map(day => (
-                <th key={day} className="p-2 text-crt-green border-2 border-crt-green">{day}</th>
+              <th className="p-2 text-crt-green border border-crt-green text-xs">
+                TIME
+              </th>
+              {weekDays.map((day) => (
+                <th
+                  key={day}
+                  className="p-2 text-crt-green border border-crt-green text-xs"
+                >
+                  {day}
+                </th>
               ))}
             </tr>
           </thead>
           <tbody>
-            {timeSlots.map(time => (
+            {timeSlots.map((time) => (
               <tr key={time}>
-                <td className="p-2 text-crt-green border-2 border-crt-green">{time}</td>
-                {weekDays.map(day => {
-                  const scheduleItem = schedule.find(item => item.day === day && item.time === time);
-                  const isSelected = selectedDay === day && selectedTime === time;
-                  
+                <td className="p-2 text-crt-green border border-crt-green text-xs">
+                  {time}
+                </td>
+                {weekDays.map((day) => {
+                  const item = schedule.find(
+                    (s) => s.day === day && s.time === time
+                  );
+                  const isSelected =
+                    selectedDay === day && selectedTime === time;
+
                   return (
-                    <td 
+                    <td
                       key={`${day}-${time}`}
-                      className={`p-2 border-2 border-crt-green relative cursor-pointer ${
-                        isSelected ? 'bg-crt-green bg-opacity-20' : ''
+                      className={`border border-crt-green p-1 ${
+                        isSelected ? "bg-crt-green bg-opacity-20" : ""
                       }`}
                       onClick={() => handleCellClick(day, time)}
                     >
-                      {scheduleItem ? (
-                        <div className="text-crt-cyan text-center text-[0.6rem]">
-                          {scheduleItem.show}
-                        </div>
-                      ) : null}
+                      {item && (
+                        <motion.div
+                          initial={{ opacity: 0 }}
+                          animate={{ opacity: 1 }}
+                          className="text-crt-cyan text-center text-[0.6rem] p-1 truncate"
+                        >
+                          {item.show}
+                        </motion.div>
+                      )}
                     </td>
                   );
                 })}
@@ -176,22 +315,36 @@ const Schedule: React.FC = () => {
         </table>
       </div>
 
-      {/* Selection controls */}
+      {/* Selection Controls */}
       {selectedDay && selectedTime && (
-        <div className="mt-4 p-2 border-2 border-crt-green">
-          <p className="text-crt-green text-xs mb-2">
-            Selected: {selectedDay} at {selectedTime}
-          </p>
-          <div className="flex justify-between items-center">
-            <div className="text-crt-cyan text-xs">
-              {selectedShow || "Select a show from above"}
+        <div className="mt-4 p-3 border border-crt-green bg-black bg-opacity-70">
+          <div className="flex justify-between items-center mb-2">
+            <div className="text-crt-green text-xs">
+              {selectedDay} at {selectedTime}
             </div>
-            <button 
+            <button
+              onClick={removeFromSchedule}
+              className="text-crt-red text-xs hover:underline"
+            >
+              Remove
+            </button>
+          </div>
+
+          <div className="flex items-center justify-between">
+            <div className="text-crt-cyan text-xs">
+              {selectedShow ? selectedShow.title : "Select a show"}
+            </div>
+
+            <button
               onClick={addToSchedule}
               disabled={!selectedShow}
-              className={`crt-button text-xs py-1 px-2 ${!selectedShow ? 'opacity-50 cursor-not-allowed' : ''}`}
+              className={`px-3 py-1 text-xs rounded ${
+                selectedShow
+                  ? "bg-crt-green text-black hover:bg-crt-cyan"
+                  : "bg-crt-gray text-crt-gray-dark cursor-not-allowed"
+              }`}
             >
-              ADD TO SCHEDULE
+              {selectedShow ? "Assign Show" : "No Show Selected"}
             </button>
           </div>
         </div>

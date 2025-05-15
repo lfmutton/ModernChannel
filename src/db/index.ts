@@ -1,9 +1,10 @@
-import { config } from 'dotenv';
 import { drizzle } from 'drizzle-orm/libsql';
+import { createClient } from '@libsql/client';
+import * as schema from './schema';
 
-config({ path: '.env' }); // or .env.local
+const tursoClient = createClient({
+  url: import.meta.env.VITE_TURSO_CONNECTION_URL!,
+  authToken: import.meta.env.VITE_TURSO_AUTH_TOKEN!,
+});
 
-export const db = drizzle({ connection: {
-  url: process.env.TURSO_CONNECTION_URL!,
-  authToken: process.env.TURSO_AUTH_TOKEN!,
-}});
+export const db = drizzle(tursoClient, { schema });

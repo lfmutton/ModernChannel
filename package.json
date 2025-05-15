@@ -1,5 +1,5 @@
 {
-  "name": "retro-crt-tv",
+  "name": "modern-channel",
   "private": true,
   "version": "0.0.0",
   "type": "module",
@@ -7,10 +7,16 @@
     "dev": "vite",
     "build": "vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "db:generate": "drizzle-kit generate",
+    "db:push": "drizzle-kit push",
+    "db:migrate": "drizzle-kit migrate",
+    "db:studio": "drizzle-kit studio"
   },
   "dependencies": {
     "@libsql/client": "^0.15.6",
+    "@types/bcryptjs": "^2.4.6",
+    "bcryptjs": "^3.0.2",
     "dotenv": "^16.5.0",
     "drizzle-orm": "^0.43.1",
     "framer-motion": "^11.0.8",
