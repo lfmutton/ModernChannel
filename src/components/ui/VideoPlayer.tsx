@@ -14,17 +14,22 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
   videoSrc = "",
 }) => {
   const [showControls, setShowControls] = React.useState(false);
-  const videoRef = useRef<HTMLVideoElement>(null);
+  const videoRef = useRef<HTMLVideoElement>(null); // Declaração CORRETA aqui
+
+  // Função deve vir DEPOIS da declaração do videoRef
+  const handleVideoClick = (e: React.MouseEvent<HTMLVideoElement>) => {
+    if (e.target === videoRef.current) {
+      videoRef.current?.play();
+    }
+  };
 
   useEffect(() => {
-    // Start playing automatically
     if (videoRef.current) {
       videoRef.current.play().catch((error) => {
         console.error("Autoplay failed:", error);
       });
     }
 
-    // Mouse movement handler to show controls
     const handleMouseMove = () => {
       setShowControls(true);
       const timer = setTimeout(() => {
@@ -48,8 +53,9 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
             className="w-full h-full object-contain"
             autoPlay
             loop
-            muted // Added muted to help with autoplay restrictions
-            playsInline // For iOS
+            muted
+            playsInline
+            onClick={handleVideoClick} // Correto aqui
           >
             <source src={videoSrc} type="video/mp4" />
           </video>
@@ -59,7 +65,6 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
           </div>
         )}
 
-        {/* Exit button (only shows on mouse movement) */}
         {showControls && (
           <Link
             to="/"

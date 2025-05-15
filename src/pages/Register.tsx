@@ -10,7 +10,6 @@ const Register: React.FC = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [email, setEmail] = useState("");
   const [birthdate, setBirthdate] = useState("");
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -29,6 +28,12 @@ const Register: React.FC = () => {
       return;
     }
 
+    if (password.length < 6) {
+      setError("Password must be at least 6 characters long");
+      setIsLoading(false);
+      return;
+    }
+
     try {
       // Check if user exists
       const existingUser = await db.query.users.findFirst({
@@ -36,7 +41,9 @@ const Register: React.FC = () => {
       });
 
       if (existingUser) {
-        throw new Error("Username already exists");
+        setError("Username already exists");
+        setIsLoading(false);
+        return;
       }
 
       // Hash password
@@ -47,13 +54,12 @@ const Register: React.FC = () => {
         name: username,
         password: hashedPassword,
         birthday: birthdate,
-        // email: email, // Uncomment if you have email in your schema
       });
 
       navigate("/login", { state: { registrationSuccess: true } });
     } catch (err) {
       console.error("Registration error:", err);
-      setError(err instanceof Error ? err.message : "Registration failed");
+      setError("Registration failed. Please try again.");
     } finally {
       setIsLoading(false);
     }
@@ -97,6 +103,7 @@ const Register: React.FC = () => {
             onChange={(e) => setUsername(e.target.value)}
             className="crt-input w-full"
             required
+            minLength={4}
           />
         </div>
 
@@ -114,6 +121,7 @@ const Register: React.FC = () => {
             onChange={(e) => setPassword(e.target.value)}
             className="crt-input w-full"
             required
+            minLength={6}
           />
         </div>
 
@@ -134,20 +142,6 @@ const Register: React.FC = () => {
           />
         </div>
 
-        <div className="mb-4">
-          <label htmlFor="email" className="block text-crt-green text-xs mb-2">
-            EMAIL:
-          </label>
-          <input
-            id="email"
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            className="crt-input w-full"
-            required
-          />
-        </div>
-
         <div className="mb-8">
           <label
             htmlFor="birthdate"
@@ -160,12 +154,10 @@ const Register: React.FC = () => {
             type="date"
             value={birthdate}
             onChange={(e) => setBirthdate(e.target.value)}
-            className="crt-input w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
+            className="crt-input w-full"
             required
             min="1900-01-01"
             max={new Date().toISOString().split("T")[0]}
-            aria-label="Enter your birthdate"
-            pattern="\d{4}-\d{2}-\d{2}"
           />
         </div>
 

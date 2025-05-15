@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
 
@@ -6,10 +6,11 @@ const Watch: React.FC = () => {
   const [showControls, setShowControls] = useState(false);
   const [videoProgress, setVideoProgress] = useState(0);
   const [mouseTimeout, setMouseTimeout] = useState<NodeJS.Timeout | null>(null);
+  const videoRef = useRef<HTMLVideoElement>(null);
 
   // Mock video data
   const videoTitle = "SYNTHWAVE NIGHTS - EP.01";
-  const videoSrc = "/path/to/your/video.mp4"; // Replace with your actual video path
+  const videoSrc = "/path/to/your/video.mp4";
 
   useEffect(() => {
     const handleMouseMove = () => {
@@ -18,36 +19,46 @@ const Watch: React.FC = () => {
       setMouseTimeout(setTimeout(() => setShowControls(false), 3000));
     };
 
+    // Atualizar progresso do vídeo
+    const updateProgress = () => {
+      if (videoRef.current) {
+        const progress = (videoRef.current.currentTime / videoRef.current.duration) * 100;
+        setVideoProgress(progress);
+      }
+    };
+
     window.addEventListener("mousemove", handleMouseMove);
+    if (videoRef.current) {
+      videoRef.current.addEventListener("timeupdate", updateProgress);
+    }
+
     return () => {
       window.removeEventListener("mousemove", handleMouseMove);
       if (mouseTimeout) clearTimeout(mouseTimeout);
+      if (videoRef.current) {
+        videoRef.current.removeEventListener("timeupdate", updateProgress);
+      }
     };
   }, [mouseTimeout]);
 
-  const handleProgressChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setVideoProgress(Number(e.target.value));
-  };
-
-  // Format time display (00:00 format)
+  // Formatar tempo
   const formatTime = (seconds: number) => {
     const mins = Math.floor(seconds / 60);
     const secs = Math.floor(seconds % 60);
-    return `${mins.toString().padStart(2, "0")}:${secs
-      .toString()
-      .padStart(2, "0")}`;
+    return `${mins.toString().padStart(2, "0")}:${secs.toString().padStart(2, "0")}`;
   };
 
-  // Mock duration (replace with actual video duration)
-  const duration = 330; // 5:30 in seconds
-  const currentTime = (duration * videoProgress) / 100;
+  // Obter dados reais do vídeo
+  const duration = videoRef.current?.duration || 0;
+  const currentTime = videoRef.current?.currentTime || 0;
 
   return (
     <div className="fixed inset-0 bg-black">
-      {/* Video container - always fullscreen */}
+      {/* Container do vídeo */}
       <div className="absolute inset-0">
         {videoSrc ? (
           <video
+            ref={videoRef}
             className="w-full h-full object-contain"
             autoPlay
             loop
@@ -64,7 +75,7 @@ const Watch: React.FC = () => {
         )}
       </div>
 
-      {/* Back button (always visible) */}
+      {/* Botão de voltar */}
       <Link
         to="/"
         className="absolute top-4 left-4 text-crt-green hover:text-crt-cyan z-50"
@@ -72,10 +83,10 @@ const Watch: React.FC = () => {
         <ArrowLeft size={24} />
       </Link>
 
-      {/* Progress controls (appears on mouse movement) */}
+      {/* Controles de progresso */}
       {showControls && (
         <div className="absolute bottom-0 left-0 right-0 bg-black bg-opacity-80 p-4 z-50">
-          {/* Video title and time */}
+          {/* Título e tempo */}
           <div className="flex justify-between items-center mb-2">
             <span className="text-crt-green text-sm font-retro">
               {videoTitle}
@@ -85,15 +96,13 @@ const Watch: React.FC = () => {
             </span>
           </div>
 
-          {/* Progress bar */}
-          <input
-            type="range"
-            min="0"
-            max="100"
-            value={videoProgress}
-            onChange={handleProgressChange}
-            className="w-full h-1.5 bg-crt-gray rounded-full appearance-none [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:h-3 [&::-webkit-slider-thumb]:w-3 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-crt-green"
-          />
+          {/* Barra de progresso não interativa */}
+          <div className="relative w-full h-2 bg-gray-800">
+            <div
+              className="absolute top-0 left-0 h-full bg-crt-green transition-all duration-200"
+              style={{ width: `${videoProgress}%` }}
+            />
+          </div>
         </div>
       )}
     </div>

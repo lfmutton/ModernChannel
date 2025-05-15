@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
 import { motion } from "framer-motion";
@@ -7,55 +7,28 @@ const Login: React.FC = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
-  const [isCheckingUser, setIsCheckingUser] = useState(false);
-  const [userExists, setUserExists] = useState(false);
-  const { login, checkUserExists } = useAuth(); // Adicione checkUserExists ao contexto
+  const [isLoading, setIsLoading] = useState(false);
+  const { login } = useAuth();
   const navigate = useNavigate();
-
-  // Verifica se o usuário existe no banco de dados
-  useEffect(() => {
-    const delayDebounceFn = setTimeout(async () => {
-      if (username.length > 3) {
-        // Verifica apenas se o username tiver mais de 3 caracteres
-        setIsCheckingUser(true);
-        try {
-          const exists = await checkUserExists(username, password);
-          setUserExists(exists);
-          if (!exists) {
-            setError("Usuário não registrado");
-          } else {
-            setError("");
-          }
-        } catch (err) {
-          console.error("Erro ao verificar usuário:", err);
-        } finally {
-          setIsCheckingUser(false);
-        }
-      }
-    }, 500);
-
-    return () => clearTimeout(delayDebounceFn);
-  }, [username, checkUserExists]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
-
-    if (!userExists) {
-      setError("Usuário não registrado");
-      return;
-    }
+    setIsLoading(true);
 
     try {
       const success = await login(username, password);
+      
       if (success) {
         navigate("/");
       } else {
-        setError("Credenciais inválidas");
+        setError("Invalid username or password");
       }
     } catch (err) {
-      setError("Ocorreu um erro durante o login");
+      setError("An error occurred during login");
       console.error(err);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -78,11 +51,7 @@ const Login: React.FC = () => {
         className="w-full max-w-md"
       >
         {error && (
-          <div
-            className={`text-${
-              error.includes("inválidas") ? "crt-red" : "crt-yellow"
-            } font-retro text-xs mb-4 text-center`}
-          >
+          <div className="text-crt-red font-retro text-xs mb-4 text-center">
             {error}
           </div>
         )}
@@ -94,34 +63,15 @@ const Login: React.FC = () => {
           >
             USERNAME:
           </label>
-          <div className="relative">
-            <input
-              id="username"
-              type="text"
-              value={username}
-              onChange={(e) => {
-                setUsername(e.target.value);
-                setUserExists(false); // Reseta ao digitar
-              }}
-              className="crt-input w-full"
-              required
-              minLength={4}
-            />
-            {isCheckingUser && (
-              <span className="absolute right-3 top-1/2 transform -translate-y-1/2 text-crt-green text-xs">
-                Verificando...
-              </span>
-            )}
-            {!isCheckingUser && username.length > 3 && (
-              <span
-                className={`absolute right-3 top-1/2 transform -translate-y-1/2 text-xs ${
-                  userExists ? "text-crt-green" : "text-crt-red"
-                }`}
-              >
-                {userExists ? "✔" : "✖"}
-              </span>
-            )}
-          </div>
+          <input
+            id="username"
+            type="text"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+            className="crt-input w-full"
+            required
+            minLength={4}
+          />
         </div>
 
         <div className="mb-8">
@@ -138,19 +88,16 @@ const Login: React.FC = () => {
             onChange={(e) => setPassword(e.target.value)}
             className="crt-input w-full"
             required
-            disabled={!userExists} // Desabilita se o usuário não existir
           />
         </div>
 
         <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
           <button
             type="submit"
-            className={`crt-button w-full sm:w-auto ${
-              !userExists ? "opacity-50 cursor-not-allowed" : ""
-            }`}
-            disabled={!userExists}
+            className="crt-button w-full sm:w-auto"
+            disabled={isLoading}
           >
-            LOGIN
+            {isLoading ? "AUTHENTICATING..." : "LOGIN"}
           </button>
 
           <Link

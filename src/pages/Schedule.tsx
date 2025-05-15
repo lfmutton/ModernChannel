@@ -2,26 +2,27 @@ import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { ArrowLeft, ChevronLeft, ChevronRight, Save } from "lucide-react";
 import { motion } from "framer-motion";
+import PasswordVerification from "../components/ui/PasswordVerification";
 
 // Mock data for carousel banners
 const carouselItems = [
   {
     id: 1,
-    title: "CYBER NEXUS",
+    title: "PEPPA PIG",
     image:
-      "https://images.pexels.com/photos/1749900/pexels-photo-1749900.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
+      "https://br.web.img3.acsta.net/pictures/18/05/03/19/09/2970720.jpg",
   },
   {
     id: 2,
-    title: "RETRO WAVES",
+    title: "SUPER ONZE",
     image:
-      "https://images.pexels.com/photos/3265460/pexels-photo-3265460.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
+      "https://www.jbchost.com.br/editorajbc/wp-content/uploads/2013/09/capa_super_onze_01_g.jpg",
   },
   {
     id: 3,
-    title: "NEON NIGHTS",
+    title: "POKÉMON",
     image:
-      "https://images.pexels.com/photos/3311574/pexels-photo-3311574.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
+      "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR_NC5WohO-V14XcVoQaDvc81Otnj9ulGWHJA&s",
   },
   {
     id: 4,
@@ -67,7 +68,6 @@ const carouselItems = [
   },
 ];
 
-// Mock data for schedule
 // Schedule data structure
 interface ScheduleItem {
   day: string;
@@ -77,7 +77,7 @@ interface ScheduleItem {
 }
 
 const Schedule: React.FC = () => {
-  // Load schedule from localStorage or use default
+  const [isVerified, setIsVerified] = useState(false);
   const [schedule, setSchedule] = useState<ScheduleItem[]>(() => {
     const saved = localStorage.getItem("tvSchedule");
     return saved
@@ -85,7 +85,6 @@ const Schedule: React.FC = () => {
       : [
           { day: "MON", time: "20:00", show: "NEON NIGHTS", showId: 3 },
           { day: "WED", time: "16:00", show: "CYBER NEXUS", showId: 1 },
-          // ... other default items ...
         ];
   });
 
@@ -97,29 +96,19 @@ const Schedule: React.FC = () => {
     id: number;
   } | null>(null);
 
-  // Days and times
   const weekDays = ["MON", "TUE", "WED", "THU", "FRI", "SAT", "SUN"];
   const timeSlots = [
-    "8:00",
-    "9:00",
-    "10:00",
-    "11:00",
-    "12:00",
-    "13:00",
-    "14:00",
-    "15:00",
-    "16:00",
-    "17:00",
-    "18:00",
-    "19:00",
-    "20:00",
-    "21:00",
+    "8:00", "9:00", "10:00", "11:00", "12:00", "13:00", "14:00",
+    "15:00", "16:00", "17:00", "18:00", "19:00", "20:00", "21:00"
   ];
 
-  // Save schedule to localStorage whenever it changes
   useEffect(() => {
     localStorage.setItem("tvSchedule", JSON.stringify(schedule));
   }, [schedule]);
+
+  if (!isVerified) {
+    return <PasswordVerification onVerified={() => setIsVerified(true)} />;
+  }
 
   const nextSlide = () => {
     setCarouselIndex((prev) => (prev + 1) % (carouselItems.length - 2));
@@ -147,12 +136,10 @@ const Schedule: React.FC = () => {
 
   const addToSchedule = () => {
     if (selectedDay && selectedTime && selectedShow) {
-      // Remove any existing entry for this time slot
       const updated = schedule.filter(
         (item) => !(item.day === selectedDay && item.time === selectedTime)
       );
 
-      // Add new entry
       setSchedule([
         ...updated,
         {
@@ -163,7 +150,6 @@ const Schedule: React.FC = () => {
         },
       ]);
 
-      // Reset selection
       setSelectedDay(null);
       setSelectedTime(null);
       setSelectedShow(null);
@@ -185,7 +171,6 @@ const Schedule: React.FC = () => {
 
   return (
     <div className="w-full h-full flex flex-col p-4 crt-screen">
-      {/* Header */}
       <div className="flex items-center justify-between mb-4">
         <Link to="/" className="flex items-center">
           <motion.div whileHover={{ x: -5 }} className="text-crt-green mr-2">
@@ -206,7 +191,6 @@ const Schedule: React.FC = () => {
         </button>
       </div>
 
-      {/* Shows Carousel */}
       <div className="relative mb-6">
         <h2 className="font-retro text-crt-cyan text-xs mb-2">
           AVAILABLE SHOWS
@@ -258,7 +242,6 @@ const Schedule: React.FC = () => {
         </div>
       </div>
 
-      {/* Schedule Grid */}
       <div className="flex-1 overflow-auto">
         <table className="w-full border-collapse">
           <thead>
@@ -315,7 +298,6 @@ const Schedule: React.FC = () => {
         </table>
       </div>
 
-      {/* Selection Controls */}
       {selectedDay && selectedTime && (
         <div className="mt-4 p-3 border border-crt-green bg-black bg-opacity-70">
           <div className="flex justify-between items-center mb-2">
@@ -332,7 +314,7 @@ const Schedule: React.FC = () => {
 
           <div className="flex items-center justify-between">
             <div className="text-crt-cyan text-xs">
-              {selectedShow ? selectedShow.title : "Select a show"}
+              {selectedShow ? selectedShow.title : "Select a serie"}
             </div>
 
             <button
@@ -344,7 +326,7 @@ const Schedule: React.FC = () => {
                   : "bg-crt-gray text-crt-gray-dark cursor-not-allowed"
               }`}
             >
-              {selectedShow ? "Assign Show" : "No Show Selected"}
+              {selectedShow ? "Assign Serie" : "No Serie Selected"}
             </button>
           </div>
         </div>
